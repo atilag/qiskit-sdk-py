@@ -156,4 +156,4 @@ This project uses the [Apache License Version 2.0 software license](https://www.
 
 ## Do you want to help?
 
-If you'd like to contribute :sunglasses: please take a look to our [contribution guidelines](CONTRIBUTING.md).
+:sunglasses: If you'd like to contribute please take a look to our [contribution guidelines](CONTRIBUTING.md).
