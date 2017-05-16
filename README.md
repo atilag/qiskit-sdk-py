@@ -95,31 +95,6 @@ pip install --upgrade IBMQuantumExperience
 curl https://bootstrap.pypa.io/ez_setup.py -o - | python
 ```
 
-## Developer guide
+## Do you want to help?
 
-Please, use [GitHub pull requests](https://help.github.com/articles/using-pull-requests) to send contributions.
-
-We use [Pylint](https://www.pylint.org) and [PEP 8](https://www.python.org/dev/peps/pep-0008) style guide.
-
-
-### Dependencies
-
-```sh
-make env-dev
-```
-
-### Test
-
-- Please run this to be sure your code fits with the style guide and the tests keep passing:
-
-```sh
-make test
-```
-
-Note: You can get yout "putYourQExperienceTokenHere" from [IBM Quantum Experience](https://quantumexperience.ng.bluemix.net) > Account)
-
-### Commit messages rules
-
-- It should be formed by a one-line subject, followed by one line of white space. Followed by one or more descriptive paragraphs, each separated by one line of white space. All of them finished by a dot.
-- If it fixes an issue, it should include a reference to the issue ID in the first line of the commit.
-- It should provide enough information for a reviewer to understand the changes and their relation to the rest of the code.
+If you'd like to contribute :sunglasses: please take a look to our [contribution guidelines](CONTRIBUTING.md).
