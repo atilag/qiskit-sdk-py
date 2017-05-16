@@ -97,4 +97,4 @@ curl https://bootstrap.pypa.io/ez_setup.py -o - | python
 
 ## Do you want to help?
 
-If you'd like to contribute :sunglasses: please take a look to our [contribution guidelines](CONTRIBUTING.md).
+:sunglasses: If you'd like to contribute please take a look to our [contribution guidelines](CONTRIBUTING.md).
