@@ -153,3 +153,7 @@ In future releases, anyone who contributes with code to this project is welcome 
 ## License
 
 This project uses the [Apache License Version 2.0 software license](https://www.apache.org/licenses/LICENSE-2.0).
+
+## Do you want to help?
+
+If you'd like to contribute :sunglasses: please take a look to our [contribution guidelines](CONTRIBUTING.md).
