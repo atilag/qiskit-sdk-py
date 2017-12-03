@@ -13,7 +13,7 @@ class CouplingStage(StageBase):
         return 'CouplingStage'
 
     def handle_request(self, input):
-        coupling_map = input.get('coupling_map')
+        coupling_map = input.extract('coupling_map')
         input.insert('coupling', mapper.Coupling(coupling_map))
 
         return input

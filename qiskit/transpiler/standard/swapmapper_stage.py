@@ -13,9 +13,9 @@ class SwapMapperStage(StageBase):
         return 'SwapMapperStage'
 
     def handle_request(self, input):
-        dag_circuit = input.get('dag_circuit')
-        coupling = input.get('coupling')
-        final_layout = input.get('layout')
+        dag_circuit = input.extract('dag_circuit')
+        coupling = input.extract('coupling')
+        final_layout = input.extract('layout')
         compiled_dag_circuit, final_layout = mapper.swap_mapper(
             dag_circuit, coupling, layout, trials=20)
 

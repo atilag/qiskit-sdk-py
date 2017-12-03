@@ -50,7 +50,7 @@ class UnrollStage(StageBase):
         if not isinstance(input, StageInputOutput):
             raise StageError('Input instance not supported!')
 
-        if not input.exists('unroll_backend_target', 'qasm_circuit'):
+        if not input.exists(['unroll_backend_target', 'qasm_circuit']):
             return False
 
         return True

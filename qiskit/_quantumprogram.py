@@ -893,11 +893,19 @@ class QuantumProgram(object):
                 basis_gates = "u1,u2,u3,cx,id"  # QE target basis
             # TODO: The circuit object going into this is to have .qasm() method (be careful)
             circuit = self.__quantum_program[name]
-            dag_circuit, final_layout = openquantumcompiler.compile(circuit.qasm(),
-                                                                    basis_gates=basis_gates,
-                                                                    coupling_map=coupling_map,
-                                                                    initial_layout=initial_layout,
-                                                                    get_layout=True)
+            # dag_circuit, final_layout = openquantumcompiler.compile(circuit.qasm(),
+            #                                                         basis_gates=basis_gates,
+            #                                                         coupling_map=coupling_map,
+            #                                                         initial_layout=initial_layout,
+            #                                                         get_layout=True)
+
+            dag_circuit, final_layout = openquantumcompiler.transpile(
+                circuit.qasm(),
+                basis_gates=basis_gates,
+                coupling_map=coupling_map,
+                initial_layout=initial_layout,
+                get_layout=True)
+
             # making the job to be added to qobj
             job = {}
             job["name"] = name

@@ -12,19 +12,20 @@ class ReturnJsonStage(StageBase):
         return 'TransformStage'
 
     def handle_request(self, input):
-        json_circuit = input.get('json_circuit')
+        json_circuit = input.extract('json_circuit')
+        layout = input.extract('layout')
         input.remove('json_circuit')
-        input.result = json_circuit
+        input.result = (layout, json_circuit)
         return input
 
     def check_precondition(self, input):
         if not isinstance(input, StageInputOutput):
             raise StageError('Input instance not supported!')
 
-        if not input.exists(['dag_circuit', 'json_circuit'])
+        if not input.exists(['dag_circuit', 'json_circuit']):
             return False
 
-        self.format = input.get('format')
+        self.format = input.extract('format')
         if self.format != 'json':
             return False
 

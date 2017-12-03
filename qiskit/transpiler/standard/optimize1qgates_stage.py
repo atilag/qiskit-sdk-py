@@ -13,7 +13,7 @@ class Optimize1qGatesState(StageBase):
         return 'CoupOptimize1qGatesState'
 
     def handle_request(self, input):
-        dag_circuit = input.get('dag_circuit')
+        dag_circuit = input.extract('dag_circuit')
         input.insert('dag_circuit', dag_circuit)
         input.insert('qasm_circuit', dag_circuit.qasm())
         input.insert('unroll_backend_target', 'dag')

@@ -23,23 +23,34 @@ class StageInputOutput(object):
     # stages to insert the key/value again just in case was modified.. hmmmm
     # This way, we don't need to remove ans simplifies the model.
     def get(self, key):
-        """ Gets the data by the given name. If the data doesn't exist, will
-        throw a StageError exception.
+        """ Gets the data by the given key. If the data doesn't exist, will
+        throw a StageError exception. The key/value pair will remain in the
+        backend container.
+
         Args:
             key (str): The key associated with the data to be returned
         Rises:
             StageError: If there's no such name in the dictionary"""
         try:
+            return self._data[key]
+        except Exception as ex:
+            raise StageError('Could not retrieve key: {}'.format(key)) from ex
+
+    def extract(self, key):
+        """ Get the data by the given key. If the data doesn't exist, will
+        throw a StageError exception. The key/value pair will be removed from
+        the backend cointer, so consumed. """
+        try:
             return self._data.pop(key)
         except Exception as ex:
             raise StageError('Could not retrieve key: {}'.format(key)) from ex
 
-    #def remove(self, key):
-    #    """ Removes a key-value pair from the dictionary """
-    #    try:
-        #     self._data.pop(key)
-        # except KeyError:
-        #     pass
+    def remove(self, key):
+        """ Removes a key-value pair from the dictionary """
+        try:
+             self._data.pop(key)
+        except KeyError:
+             pass
 
     @property
     def result(self):

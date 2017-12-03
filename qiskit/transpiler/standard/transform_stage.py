@@ -14,8 +14,8 @@ class TransformStage(StageBase):
         return 'TransformStage'
 
     def handle_request(self, input):
-        output_format = input.get('format')
-        dag_circuit = input.get('dag_circuit')
+        output_format = input.extract('format')
+        dag_circuit = input.extract('dag_circuit')
 
         if output_format == 'dag':
             transformed_circuit = dag_circuit
@@ -35,7 +35,7 @@ class TransformStage(StageBase):
         if not isinstance(input, StageInputOutput):
             raise StageError('Input instance not supported!')
 
-        if not input.exists(['dag_circuit','format'])
+        if not input.exists(['dag_circuit','format']):
             return False
 
         return True

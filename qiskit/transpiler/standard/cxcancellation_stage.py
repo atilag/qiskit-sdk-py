@@ -13,7 +13,7 @@ class CxCancellationStage(StageBase):
         return 'CxCancellationStage'
 
     def handle_request(self, input):
-        dag_circuit = input.get('dag_circuit')
+        dag_circuit = input.extract('dag_circuit')
 
         input.insert('dag_circuit',
             mapper.cx_cancellation(dag_circuit))
