@@ -13,16 +13,13 @@ class ShowListStage(StageBase):
         return 'ShowList'
 
     def handle_request(self, input):
-        if not self._check_preconditions(input):
-            return input
-
         list = input.get('list')
         for elem in list:
             print('ShowListStage: elem = {}'.format(elem))
 
         return input
 
-    def _check_preconditions(self, input):
+    def check_precondition(self, input):
         if not isinstance(input, StageInputOutput):
             raise StageError('Input instance not supported!')
 
@@ -39,15 +36,12 @@ class AddElementStage(StageBase):
         return self.name
 
     def handle_request(self, input):
-        if not self._check_preconditions(input):
-            return input
-
         list = input.get('list')
         list.append(5)
         print('AddElementStage: Add a new element 5 to the list')
         return input
 
-    def _check_preconditions(self, input):
+    def check_precondition(self, input):
         if not isinstance(input, StageInputOutput):
             raise StageError('Input instance not supported!')
 
@@ -63,16 +57,13 @@ class ChangeElementStage(StageBase):
         return 'ChangeElement'
 
     def handle_request(self, input):
-        if not self._check_preconditions(input):
-            return input
-
         self.element_to_change += self.element_to_change
         list.append(self.element_to_change)
         print('ChangeElementStage: New element value {} changed in the list'
-              .format(self.element_to_change))
+                .format(self.element_to_change))
         return input
 
-    def _check_preconditions(self, input):
+    def check_precondition(self, input):
         if not isinstance(input, StageInputOutput):
             raise StageError('Input instance not supported!')
 
@@ -95,18 +86,15 @@ class SummationStage(StageBase):
         return 'Summation'
 
     def handle_request(self, input):
-        if not self._check_preconditions(input):
-            return input
-
         summation = sum(self._list)
 
         print('SummationStage: The summation of all the list elements is: {}'
-              .format(summation))
-        
+                .format(summation))
+
         input.result = summation
         return input
 
-    def _check_preconditions(self, input):
+    def check_precondition(self, input):
         if not isinstance(input, StageInputOutput):
             raise StageError('Input instance not supported!')
 
