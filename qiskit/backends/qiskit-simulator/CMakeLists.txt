@@ -1,3 +1,5 @@
+project(qiskit_simulator VERSION 1.0 LANGUAGES CXX)
+
 # Set the output folder where your program will be created
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/out/${CMAKE_BUILD_TYPE}/qiskit-simulator/)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -8,6 +10,9 @@ set(QISKIT_SIMULATOR_DIR
 set(QISKIT_SIMULATOR_SRC_DIR "${QISKIT_SIMULATOR_DIR}/src")
 set(QISKIT_SIMULATOR_SRC
     "${QISKIT_SIMULATOR_SRC_DIR}/main.cpp")
+set(QISKIT_SIMULATOR_EXTERNAL_LIBS
+    "${QISKIT_SIMULATOR_SRC_DIR}/third-party/headers/*.*"
+    "${QISKIT_SIMULATOR_SRC_DIR}/third-party/win64/lib/*.lib")
 
 # Target definition
 add_executable(qiskit_simulator ${QISKIT_SIMULATOR_SRC})
@@ -41,21 +46,34 @@ _enable_cxx_compiler_flag_if_supported("-Wredundant-decls")
 _enable_cxx_compiler_flag_if_supported("-Wshadow")
 _enable_cxx_compiler_flag_if_supported("-Woverloaded-virtual")
 
+if(WIN32)
+    SET(CMAKE_FIND_LIBRARY_PREFIXES "")
+    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib")
+endif()
+
 # Looking for external libraries
-find_library(LIB_LAPACK lapack)
+find_library(LIB_JSON json PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
+if(NOT LIB_JSON)
+    message(FATAL_ERROR "JSON library not found!")
+endif()
+
+find_library(LIB_LAPACK lapack PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
 if(NOT LIB_LAPACK)
     message(FATAL_ERROR "LAPACK library not found!")
 endif()
-find_library(LIB_BLAS blas)
+
+find_library(LIB_BLAS blas PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
 if(NOT LIB_BLAS)
     message(FATAL_ERROR "BLAS library not found!")
 endif()
-find_library(LIB_THREADS pthread)
+
+find_library(LIB_THREADS pthread PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
 if(NOT LIB_THREADS)
     message(FATAL_ERROR "Pthreads library not found!")
 endif()
 
-set(LIBRARIES PRIVATE ${LIB_BLAS}
+set(LIBRARIES PRIVATE ${LIB_JSON}
+                      ${LIB_BLAS}
                       ${LIB_LAPACK}
                       ${LIB_THREADS})
 
