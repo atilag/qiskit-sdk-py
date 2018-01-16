@@ -5,26 +5,19 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/out/${CMAKE_BUILD_TYPE}/qiskit-simulato
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
-set(QISKIT_SIMULATOR_DIR
-    "${PROJECT_SOURCE_DIR}/qiskit/backends/qiskit-simulator")
-set(QISKIT_SIMULATOR_SRC_DIR "${QISKIT_SIMULATOR_DIR}/src")
+set(QISKIT_SIMULATOR_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 set(QISKIT_SIMULATOR_SRC
     "${QISKIT_SIMULATOR_SRC_DIR}/main.cpp")
 set(QISKIT_SIMULATOR_EXTERNAL_LIBS
-    "${QISKIT_SIMULATOR_SRC_DIR}/third-party/headers/*.*"
-    "${QISKIT_SIMULATOR_SRC_DIR}/third-party/win64/lib/*.lib")
+    "${QISKIT_SIMULATOR_SRC_DIR}/third-party/headers"
+    "${QISKIT_SIMULATOR_SRC_DIR}/third-party/win64/lib"
+	"${USER_LIB_PATH}")
 
 # Target definition
 add_executable(qiskit_simulator ${QISKIT_SIMULATOR_SRC})
 
 # Target properties: C++ program
 set_target_properties(qiskit_simulator PROPERTIES LINKER_LANGUAGE CXX)
-
-target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR})
-target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/backends)
-target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/engines)
-target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/utilities)
-target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/third-party)
 
 # Toolchain options
 set_property(TARGET qiskit_simulator PROPERTY CXX_STANDARD 14)
@@ -46,36 +39,50 @@ _enable_cxx_compiler_flag_if_supported("-Wredundant-decls")
 _enable_cxx_compiler_flag_if_supported("-Wshadow")
 _enable_cxx_compiler_flag_if_supported("-Woverloaded-virtual")
 
-if(WIN32)
-    SET(CMAKE_FIND_LIBRARY_PREFIXES "")
-    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib")
+target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR})
+target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/backends)
+target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/engines)
+target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/utilities)
+target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/third-party/headers)
+
+if(MINGW)
+    SET(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
+    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".hpp")
 endif()
 
 # Looking for external libraries
-find_library(LIB_JSON json PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
+find_library(LIB_JSON
+	NAMES json
+	PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
 if(NOT LIB_JSON)
-    message(FATAL_ERROR "JSON library not found!")
+    message(FATAL_ERROR "JSON library not found!. Please provide with a USER_LIB_PATH to CMake so it can be searched there")
 endif()
 
-find_library(LIB_LAPACK lapack PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
+find_library(LIB_LAPACK
+	NAMES lapack
+	PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
 if(NOT LIB_LAPACK)
-    message(FATAL_ERROR "LAPACK library not found!")
+    message(FATAL_ERROR "LAPACK library not found!. Please provide with a USER_LIB_PATH to CMake so it can be searched there")
 endif()
 
-find_library(LIB_BLAS blas PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
+find_library(LIB_BLAS
+	NAMES blas
+	PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
 if(NOT LIB_BLAS)
-    message(FATAL_ERROR "BLAS library not found!")
+    message(FATAL_ERROR "BLAS library not found!. Please provide with a USER_LIB_PATH to CMake so it can be searched there")
 endif()
 
-find_library(LIB_THREADS pthread PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
+find_library(LIB_THREADS
+	NAMES pthread
+	PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
 if(NOT LIB_THREADS)
-    message(FATAL_ERROR "Pthreads library not found!")
+    message(FATAL_ERROR "Pthreads library not found!. Please provide with a USER_LIB_PATH to CMake so it can be searched there")
 endif()
 
 set(LIBRARIES PRIVATE ${LIB_JSON}
-                      ${LIB_BLAS}
+					  ${LIB_BLAS}
                       ${LIB_LAPACK}
-                      ${LIB_THREADS})
+					  ${LIB_THREADS})
 
 # Linking
 target_link_libraries(qiskit_simulator ${LIBRARIES})
