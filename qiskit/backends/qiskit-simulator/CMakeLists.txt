@@ -26,6 +26,9 @@ set_property(TARGET qiskit_simulator PROPERTY CXX_STANDARD 14)
 _enable_cxx_compiler_flag_if_supported("-O3")
 _enable_cxx_compiler_flag_if_supported("-march=native")
 _enable_cxx_compiler_flag_if_supported("-fopenmp")
+_enable_cxx_compiler_flag_if_supported("-static")
+_enable_cxx_compiler_flag_if_supported("-static-libstdc++")
+_enable_cxx_compiler_flag_if_supported("-static-libgcc")
 
 # Warnings and Errors
 _enable_cxx_compiler_flag_if_supported("-pedantic")
@@ -47,7 +50,7 @@ target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/
 
 if(MINGW)
     SET(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
-    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".hpp")
+    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".hpp" ".a")
 endif()
 
 # Looking for external libraries
@@ -90,4 +93,20 @@ target_link_libraries(qiskit_simulator ${LIBRARIES})
 # Tests
 # TODO: Enable them when ready
 #add_subdirectory(${QISKIT_SIMULATOR_DIR}/test)
+
+if(MINGW)
+	set(QISKIT_SIMULATOR_THIRD_PARTY_DLLS
+		"${QISKIT_SIMULATOR_SRC_DIR}/third-party/win64/dll/libblas.dll"
+		"${QISKIT_SIMULATOR_SRC_DIR}/third-party/win64/dll/libgfortran_64-3.dll"
+		"${QISKIT_SIMULATOR_SRC_DIR}/third-party/win64/dll/libquadmath_64-0.dll")
+		
+	foreach(dll_file ${QISKIT_SIMULATOR_THIRD_PARTY_DLLS})
+		add_custom_command(
+		TARGET qiskit_simulator
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND}
+		ARGS -E copy ${dll_file} ${EXECUTABLE_OUTPUT_PATH}
+	)
+	endforeach(dll_file)
+endif()
 
