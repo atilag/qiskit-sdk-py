@@ -1,10 +1,5 @@
 project(qiskit_simulator VERSION 1.0 LANGUAGES CXX)
 
-# Set the output folder where your program will be created
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/out/${CMAKE_BUILD_TYPE}/qiskit-simulator/)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-
 set(QISKIT_SIMULATOR_SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 set(QISKIT_SIMULATOR_SRC
     "${QISKIT_SIMULATOR_SRC_DIR}/main.cpp")
@@ -23,24 +18,24 @@ set_target_properties(qiskit_simulator PROPERTIES LINKER_LANGUAGE CXX)
 set_property(TARGET qiskit_simulator PROPERTY CXX_STANDARD 14)
 
 # Compiler flags
-_enable_cxx_compiler_flag_if_supported("-O3")
-_enable_cxx_compiler_flag_if_supported("-march=native")
-_enable_cxx_compiler_flag_if_supported("-fopenmp")
-_enable_cxx_compiler_flag_if_supported("-static")
-_enable_cxx_compiler_flag_if_supported("-static-libstdc++")
-_enable_cxx_compiler_flag_if_supported("-static-libgcc")
+enable_cxx_compiler_flag_if_supported("-O3")
+enable_cxx_compiler_flag_if_supported("-march=native")
+enable_cxx_compiler_flag_if_supported("-fopenmp")
+enable_cxx_compiler_flag_if_supported("-static")
+enable_cxx_compiler_flag_if_supported("-static-libstdc++")
+enable_cxx_compiler_flag_if_supported("-static-libgcc")
 
 # Warnings and Errors
-_enable_cxx_compiler_flag_if_supported("-pedantic")
-_enable_cxx_compiler_flag_if_supported("-Wall")
-_enable_cxx_compiler_flag_if_supported("-Wfloat-equal")
-_enable_cxx_compiler_flag_if_supported("-Wundef")
-_enable_cxx_compiler_flag_if_supported("-Wcast-align")
-_enable_cxx_compiler_flag_if_supported("-Wwrite-strings")
-_enable_cxx_compiler_flag_if_supported("-Wmissing-declarations")
-_enable_cxx_compiler_flag_if_supported("-Wredundant-decls")
-_enable_cxx_compiler_flag_if_supported("-Wshadow")
-_enable_cxx_compiler_flag_if_supported("-Woverloaded-virtual")
+enable_cxx_compiler_flag_if_supported("-pedantic")
+enable_cxx_compiler_flag_if_supported("-Wall")
+enable_cxx_compiler_flag_if_supported("-Wfloat-equal")
+enable_cxx_compiler_flag_if_supported("-Wundef")
+enable_cxx_compiler_flag_if_supported("-Wcast-align")
+enable_cxx_compiler_flag_if_supported("-Wwrite-strings")
+enable_cxx_compiler_flag_if_supported("-Wmissing-declarations")
+enable_cxx_compiler_flag_if_supported("-Wredundant-decls")
+enable_cxx_compiler_flag_if_supported("-Wshadow")
+enable_cxx_compiler_flag_if_supported("-Woverloaded-virtual")
 
 target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR})
 target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/backends)
@@ -90,23 +85,26 @@ set(LIBRARIES PRIVATE ${LIB_JSON}
 # Linking
 target_link_libraries(qiskit_simulator ${LIBRARIES})
 
-# Tests
-# TODO: Enable them when ready
-#add_subdirectory(${QISKIT_SIMULATOR_DIR}/test)
+set(QISKIT_SIMULATOR_OUTPUT_DIR $<TARGET_FILE_DIR:qiskit_simulator>
+	CACHE INTERNAL "Output directory for building QISKit C++ Simulator")
 
 if(MINGW)
 	set(QISKIT_SIMULATOR_THIRD_PARTY_DLLS
 		"${QISKIT_SIMULATOR_SRC_DIR}/third-party/win64/dll/libblas.dll"
 		"${QISKIT_SIMULATOR_SRC_DIR}/third-party/win64/dll/libgfortran_64-3.dll"
-		"${QISKIT_SIMULATOR_SRC_DIR}/third-party/win64/dll/libquadmath_64-0.dll")
-		
+		"${QISKIT_SIMULATOR_SRC_DIR}/third-party/win64/dll/libquadmath_64-0.dll"
+		CACHE INTERNAL "Third-party C++ Simulator DLLs")
+
 	foreach(dll_file ${QISKIT_SIMULATOR_THIRD_PARTY_DLLS})
 		add_custom_command(
-		TARGET qiskit_simulator
-		POST_BUILD
-		COMMAND ${CMAKE_COMMAND}
-		ARGS -E copy ${dll_file} ${EXECUTABLE_OUTPUT_PATH}
-	)
+			TARGET qiskit_simulator
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND}
+			ARGS -E copy ${dll_file} ${QISKIT_SIMULATOR_OUTPUT_DIR}/
+		)
 	endforeach(dll_file)
 endif()
 
+# Tests
+# TODO: Enable them when ready
+#add_subdirectory(${QISKIT_SIMULATOR_DIR}/test)
