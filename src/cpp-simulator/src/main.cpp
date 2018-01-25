@@ -55,12 +55,14 @@ int main(int argc, char **argv) {
       qobj = JSON::load(std::string(argv[1]));
     } catch (std::exception &e) {
       std::stringstream msg;
-      msg << "Invalid input (" << e.what() << ")";
+      msg << "Invalid input (" << e.what() << ")" << " argv: " << argv[1];
       failed(msg.str(), out, indent);
       return 1;
     }
   } else {
-    failed("Invalid command line", out);
+    std::stringstream msg;
+    msg << "argc: " << argc << " argv: " << argv;
+    failed(msg.str(), out);
     // Print usage message
     std::cerr << std::endl;
     std::cerr << "qsikit_simulator file" << std::endl;
