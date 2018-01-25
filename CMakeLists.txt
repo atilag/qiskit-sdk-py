@@ -11,7 +11,7 @@ include(defaults.cmake)
 include(toolchain-utils.cmake)
 
 # Add C++ Qiskit Simulator
-add_subdirectory(${PROJECT_SOURCE_DIR}/qiskit/backends/qiskit-simulator)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/qiskit-simulator)
 
 # Add Python distributable package generator
 include(python-build.cmake)
