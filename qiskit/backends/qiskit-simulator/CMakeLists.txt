@@ -21,9 +21,12 @@ set_property(TARGET qiskit_simulator PROPERTY CXX_STANDARD 14)
 enable_cxx_compiler_flag_if_supported("-O3")
 enable_cxx_compiler_flag_if_supported("-march=native")
 enable_cxx_compiler_flag_if_supported("-fopenmp")
-enable_cxx_compiler_flag_if_supported("-static")
-enable_cxx_compiler_flag_if_supported("-static-libstdc++")
-enable_cxx_compiler_flag_if_supported("-static-libgcc")
+
+if(MINGW)
+	enable_cxx_compiler_flag_if_supported("-static")
+	enable_cxx_compiler_flag_if_supported("-static-libstdc++")
+	enable_cxx_compiler_flag_if_supported("-static-libgcc")
+endif()
 
 # Warnings and Errors
 enable_cxx_compiler_flag_if_supported("-pedantic")
@@ -43,12 +46,18 @@ target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/
 target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/utilities)
 target_include_directories(qiskit_simulator PRIVATE ${QISKIT_SIMULATOR_SRC_DIR}/third-party/headers)
 
+# For header only libraries
+SET(CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "")
+SET(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES} ".hpp")
+
 if(MINGW)
-    SET(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
-    SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".hpp" ".a")
+    SET(CMAKE_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES} "lib")
+    SET(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES} ".lib" ".a")
 endif()
 
 # Looking for external libraries
+# This is a header-only library so we don't want it to link it, but we still
+# want CMake to find it.
 find_library(LIB_JSON
 	NAMES json
 	PATHS ${QISKIT_SIMULATOR_EXTERNAL_LIBS})
@@ -77,8 +86,7 @@ if(NOT LIB_THREADS)
     message(FATAL_ERROR "Pthreads library not found!. Please provide with a USER_LIB_PATH to CMake so it can be searched there")
 endif()
 
-set(LIBRARIES PRIVATE ${LIB_JSON}
-					  ${LIB_BLAS}
+set(LIBRARIES PRIVATE ${LIB_BLAS}
                       ${LIB_LAPACK}
 					  ${LIB_THREADS})
 
