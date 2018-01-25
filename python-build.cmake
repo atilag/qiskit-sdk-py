@@ -4,7 +4,7 @@ function(add_pypi_package_target TARGET_NAME)
 	# Create Python distrubution package
 	find_program(PYTHON "python")
 	if (NOT PYTHON)
-		message(FATAL_ERROR "We can't find Python in your system. Install it and try again...")
+		message(FATAL_ERROR "We can't find Python in your system. Please, install it and try again...")
 	endif()
 	set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")
 	set(SETUP_PY    "${CMAKE_CURRENT_SOURCE_DIR}/setup.py")
@@ -36,7 +36,7 @@ function(add_pypi_package_target TARGET_NAME)
 					${CMAKE_CURRENT_SOURCE_DIR}/qiskit/backends)
 		endforeach()
 	endif()
-	
+
 	add_custom_target(${TARGET_NAME})
 	add_custom_command(TARGET ${TARGET_NAME}
 		COMMAND ${PYTHON} ${SETUP_PY} sdist
@@ -44,7 +44,7 @@ function(add_pypi_package_target TARGET_NAME)
 		${PIP_CURRENT_PLATFORM}
 		--dist-dir ${CMAKE_CURRENT_BINARY_DIR}/dist
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-	
+
 	add_dependencies(${TARGET_NAME} ${COPY_QISKIT_SIM_TARGET})
 	add_dependencies(${COPY_QISKIT_SIM_TARGET} qiskit_simulator)
 endfunction()
