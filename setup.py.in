@@ -1,14 +1,20 @@
+import sys
+import os
 from setuptools import setup
-from setuptools.dist import Distribution
+from setuptools.command.install import install
+from distutils.command.build import build
+from multiprocessing import cpu_count
+from subprocess import call
+import platform
 
 
 requirements = [
     "IBMQuantumExperience>=1.8.26",
-    "matplotlib>=2.0,<=2.1",
-    "networkx>=1.11,<1.12",
-    "numpy>=1.13,<=1.14",
+    "matplotlib>=2.1,<2.2",
+    "networkx>=1.11,<2.1",
+    "numpy>=1.13,<1.15",
     "ply==3.10",
-    "scipy>=0.19,<=1.0",
+    "scipy>=0.19,<1.1",
     "Sphinx>=1.6,<1.7",
     "sympy>=1.0"
 ]
@@ -30,10 +36,45 @@ packages = ["qiskit",
             "qiskit.tools.qcvv",
             "qiskit.tools.qi"]
 
-class BinaryDistribution(Distribution):
-    def has_ext_modules(self):
-        return True
-	
+
+# C++ components compilation
+class QiskitSimulatorBuild(build):
+    def run(self):
+        build.run(self)
+        supported_platforms = ['Linux', 'Darwin', 'Windows']
+        current_platform = platform.system()
+        if not current_platform in supported_platforms:
+            print('WARNING: QISKit cpp simulator is ment to be built with these '
+                  'platforms: {}. We will support other platforms soon!'
+                  .format(supported_platforms))
+            return
+
+        cmd_cmake = ['cmake', '-vvv']
+        if os.environ['USER_LIB_PATH']:
+            cmd_cmake.append('-DUSER_LIB_PATH={}'.format(os.environ['USER_LIB_PATH']))
+        if current_platform == 'Windows':
+            # We only support MinGW so far
+            cmd_cmake.append("-GMinGW Makefiles")
+        cmd_cmake.append('..')
+
+        try:
+            cmd_make.append('-j%d' % cpu_count())
+        except NotImplementedError:
+            print('WARNING: Unable to determine number of CPUs. Using single threaded make.')
+
+        def compile():
+            self.mkpath('out')
+            os.chdir('out')
+            call(cmd_cmake)
+            call(cmd_make)
+
+        try:
+            self.execute(compile, [], 'Compiling QISKit C++ Simulator')
+        except:
+            print("WARNING: Seems like the cpp simulator can't be built, Qiskit will "
+                  "install anyway, but won't have this simulator support.")
+            return
+
 setup(
     name="qiskit",
     version="${QISKIT_VERSION}",
@@ -57,10 +98,12 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Topic :: Scientific/Engineering",
     ],
-    distclass=BinaryDistribution,
     keywords="qiskit sdk quantum",
     packages=packages,
     install_requires=requirements,
     include_package_data=True,
-    python_requires=">=3.5"
+    python_requires=">=3.5",
+    cmdclass={
+        'build': QiskitSimulatorBuild,
+    }
 )
