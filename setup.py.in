@@ -50,12 +50,14 @@ class QiskitSimulatorBuild(build):
             return
 
         cmd_cmake = ['cmake', '-vvv']
-        if os.environ['USER_LIB_PATH']:
+        if 'USER_LIB_PATH' in os.environ:
             cmd_cmake.append('-DUSER_LIB_PATH={}'.format(os.environ['USER_LIB_PATH']))
         if current_platform == 'Windows':
             # We only support MinGW so far
             cmd_cmake.append("-GMinGW Makefiles")
         cmd_cmake.append('..')
+
+        cmd_make = ['make', 'qiskit_simulator']
 
         try:
             cmd_make.append('-j%d' % cpu_count())
@@ -67,6 +69,7 @@ class QiskitSimulatorBuild(build):
             os.chdir('out')
             call(cmd_cmake)
             call(cmd_make)
+            os.chdir('..')
 
         try:
             self.execute(compile, [], 'Compiling QISKit C++ Simulator')
