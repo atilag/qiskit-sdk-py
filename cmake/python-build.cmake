@@ -1,6 +1,13 @@
 
-
-function(add_pypi_package_target TARGET_NAME)
+# Creates a TARGET_NAME target for creating Pypi distributable package
+# Args:
+#    TARGET_NAME    The name of the target to be invoked in the Makefile
+#    PACKAGE_TYPE   The type of distributable package we want to build. We have
+#                   these options:
+#						"sdist" => Source distribution package
+#						"bdist_wheel" => Platform specific distribution package
+#						"both" => Creates both sdist and bdist_wheel
+function(add_pypi_package_target TARGET_NAME PACKAGE_TYPE)
 	# Create Python distrubution package
 	find_program(PYTHON "python")
 	if (NOT PYTHON)
@@ -13,13 +20,23 @@ function(add_pypi_package_target TARGET_NAME)
 	message("QISKIT_VERSION = ${QISKIT_VERSION}")
 	configure_file(${SETUP_PY_IN} ${SETUP_PY})
 
+	if(PACKAGE_TYPE STREQUAL "both")
+		set(PIP_PACKAGE_TYPES sdist --dist-dir ${CMAKE_CURRENT_BINARY_DIR}/dist
+			bdist_wheel --dist-dir ${CMAKE_CURRENT_BINARY_DIR}/dist)
+	elseif(PACKAGE_TYPE STREQUAL "sdist")
+		set(PIP_PACKAGE_TYPES sdist --dist-dir ${CMAKE_CURRENT_BINARY_DIR}/dist)
+	elseif(PACKAGE_TYPE STREQUAL "bdist_wheel")
+		set(PIP_PACKAGE_TYPES bdist_wheel --dist-dir ${CMAKE_CURRENT_BINARY_DIR}/dist)
+	endif()
+
+
 	if(UNIX AND NOT APPLE)
-		set(PIP_CURRENT_PLATFORM bdist_wheel -p manylinux1_x86_64)
+		#set(PIP_WHEEL_PLATFORM ${PACKAGE_TYPE} -p manylinux1_x86_64)
 	elseif(MINGW)
 		set(EXECUTABLE_FILE_EXTENSION ".exe")
-		set(PIP_CURRENT_PLATFORM "bdist_wheel") # TODO: Find the correct Tag
+		#set(PIP_WHEEL_PLATFORM "bdist_wheel") # TODO: Find the correct Tag
 	elseif(APPLE)
-		set(PIP_CURRENT_PLATFORM "bdist_wheel") # TODO: Find the correct Tag
+		#set(PIP_WHEEL_PLATFORM "bdist_wheel") # TODO: Find the correct Tag
 	endif()
 
 	set(COPY_QISKIT_SIM_TARGET ${TARGET_NAME}_copy_qiskit_simulator)
@@ -39,10 +56,7 @@ function(add_pypi_package_target TARGET_NAME)
 
 	add_custom_target(${TARGET_NAME})
 	add_custom_command(TARGET ${TARGET_NAME}
-		COMMAND ${PYTHON} ${SETUP_PY} sdist
-		--dist-dir ${CMAKE_CURRENT_BINARY_DIR}/dist
-		${PIP_CURRENT_PLATFORM}
-		--dist-dir ${CMAKE_CURRENT_BINARY_DIR}/dist
+		COMMAND ${PYTHON} ${SETUP_PY} ${PIP_PACKAGE_TYPES}
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 	add_dependencies(${TARGET_NAME} ${COPY_QISKIT_SIM_TARGET})

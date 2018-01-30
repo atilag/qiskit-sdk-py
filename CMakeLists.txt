@@ -5,21 +5,21 @@ project (QISKit VERSION 0.5.0 LANGUAGES CXX)
 set(CMAKE_VERBOSE_MAKEFILE True)
 set(QISKIT_VERSION ${PROJECT_VERSION} CACHE INTERNAL "VERSION OF QISKIT")
 
-include(defaults.cmake)
+include(cmake/defaults.cmake)
 
 # Add Toolchain utilities for C++ sources
-include(toolchain-utils.cmake)
+include(cmake/toolchain-utils.cmake)
 
 # Add C++ Qiskit Simulator
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/qiskit-simulator)
 
 # Add tests and linters
-include(code-qa.cmake)
+include(cmake/code-qa.cmake)
 add_linter_target()
 add_code_style_target()
 
 
 # Add Python distributable package generator
-include(python-build.cmake)
-add_pypi_package_target(pypi_package)
+include(cmake/python-build.cmake)
+add_pypi_package_target(pypi_package "sdist")
 
