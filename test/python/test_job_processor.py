@@ -20,7 +20,6 @@ import pprint
 import unittest
 
 from IBMQuantumExperience.IBMQuantumExperience import IBMQuantumExperience
-
 from qiskit import (ClassicalRegister, QuantumCircuit, QuantumProgram,
                     QuantumRegister, QISKitError)
 from qiskit import _openquantumcompiler as openquantumcompiler
