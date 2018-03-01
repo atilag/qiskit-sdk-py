@@ -27,7 +27,6 @@ from ._classicalregister import ClassicalRegister
 from ._measure import Measure
 from ._reset import Reset
 from ._instructionset import InstructionSet
-from .dagcircuit import DAGCircuit
 
 
 class QuantumCircuit(object):
