@@ -66,7 +66,7 @@ function(add_pypi_package_target TARGET_NAME PACKAGE_TYPE)
 			ADDITIONAL_MAKE_CLEAN_FILES
 				${CMAKE_CURRENT_SOURCE_DIR}/qiskit/backends/local/qasm_simulator_cpp${EXECUTABLE_FILE_EXTENSION})
 		# For Windows, we need to copy external .dll dependencies too
-		if(MINGW)
+		if(WIN32)
             foreach(dll_file ${QASM_SIMULATOR_CPP_THIRD_PARTY_DLLS})
 				add_custom_command(TARGET ${COPY_QASM_SIM_CPP_TARGET}
 					COMMAND ${CMAKE_COMMAND} -E copy

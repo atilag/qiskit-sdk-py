@@ -60,28 +60,21 @@ class QasmSimulatorCppBuild(build):
             cmd_cmake = ['cmake', '-vvv']
             if 'USER_LIB_PATH' in os.environ:
                 cmd_cmake.append('-DUSER_LIB_PATH={}'.format(os.environ['USER_LIB_PATH']))
-            if current_platform == 'Windows':
-                # We only support MinGW so far
-                cmd_cmake.append("-GMinGW Makefiles")
+
             cmd_cmake.append('..')
-
-            cmd_make = ['make', 'pypi_package_copy_qasm_simulator_cpp']
-
-            try:
-                cmd_make.append('-j%d' % cpu_count())
-            except NotImplementedError:
-                print('WARNING: Unable to determine number of CPUs. Using single threaded make.')
+            cmd_build = ['cmake', '--build', '.', '--config', 'Release',
+                        '--target', 'pypi_package_copy_qasm_simulator_cpp']
 
             def compile_simulator():
                 self.mkpath('out')
                 os.chdir('out')
                 call(cmd_cmake)
-                call(cmd_make)
+                call(cmd_build)
 
             self.execute(compile_simulator, [], 'Compiling C++ QASM Simulator')
         except Exception as e:
             print(str(e))
-            print("WARNING: Seems like the cpp simulator can't be built, Qiskit will "
+            print("WARNING: Seems like the cpp simulator can't be built, QISKit will "
                   "install anyway, but won't have this simulator support.")
 
         # Restore working directory.
