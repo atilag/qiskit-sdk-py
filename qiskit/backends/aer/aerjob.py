@@ -120,7 +120,6 @@ class AerJob(BaseJob):
             # in any of the previous states, is PENDING, ergo INITIALIZING for us.
             _status = JobStatus.INITIALIZING
 
-
         return _status
 
     def backend_name(self):
