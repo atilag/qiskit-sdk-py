@@ -67,7 +67,7 @@ class Qobj(BaseModel):
 
         super().__init__(**kwargs)
 
-    def __str__(self):
+    def __repr__(self):
         return "Qobj<{0} qubits, {1} {2}, {3} shots>".format(
             self.config.n_qubits,
             len(self.experiments),
